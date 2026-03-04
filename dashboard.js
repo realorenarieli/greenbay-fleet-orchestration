@@ -84,15 +84,86 @@ var MARKET_SIZE_DATA = {
     source: "MarketsandMarkets (T&L segment share)"
   },
   // SOM: EV Fleet Orchestration (Greenbay's addressable market)
-  // ~2% of SAM = early adopter segment for EV-specific fleet orchestration
+  // Bottom-up calculation based on target customer segments
   som: {
-    current: 0.3,       // 2025 in $B (~2% of SAM)
-    projected: 0.64,    // 2030 in $B
-    share: 2,           // % of SAM (early adopter segment)
-    description: "EV fleet orchestration early adopters (~2% of SAM)",
-    source: "Greenbay Analysis based on EV truck penetration (~2% in EU per ACEA)",
+    projected: 42,      // $42M base case (in millions, not billions)
+    projectedLow: 15,   // $15M conservative
+    projectedHigh: 80,  // $80M aggressive
+    description: "Bottom-up: Transit + Commercial E-Fleets (US + Europe)",
+    source: "Greenbay Analysis - Bottom-up model",
     isEstimate: true,
-    methodology: "Bottom-up: target customers × contract value × win rate"
+    methodology: "Target customers × ACV × win rate"
+  },
+  // Bottom-up Model Details
+  bottomUpModel: {
+    // Target Customer Segments
+    segments: [
+      {
+        name: "Enterprise Transit (500+ vehicles)",
+        description: "Large transit agencies with E-Bus fleets",
+        usCount: 50,      // MTA, LA Metro, CTA, SEPTA, etc.
+        euCount: 100,     // TfL, RATP, BVG, ATM Milan, etc.
+        total: 150,
+        acv: 400000,      // $400K/year
+        source: "FTA NTD, UITP Europe"
+      },
+      {
+        name: "Mid-Market Transit (100-500 vehicles)",
+        description: "Regional transit agencies deploying E-Buses",
+        usCount: 150,
+        euCount: 200,
+        total: 350,
+        acv: 250000,      // $250K/year
+        source: "FTA NTD (~850 urban agencies), UITP (500+ EU operators)"
+      },
+      {
+        name: "Enterprise Commercial (500+ vehicles)",
+        description: "Large logistics/delivery fleets with EVs",
+        usCount: 100,     // Amazon, FedEx, UPS, Walmart, etc.
+        euCount: 150,     // DHL, DB Schenker, Royal Mail, etc.
+        total: 250,
+        acv: 350000,      // $350K/year
+        source: "EV100 Climate Group, company announcements"
+      }
+    ],
+    totalTargetCustomers: 750,
+    // Scenarios
+    scenarios: [
+      {
+        name: "Conservative",
+        description: "Transit focus, early traction",
+        targetCustomers: 500,
+        winRate: 0.10,
+        avgAcv: 300000,
+        som: 15,          // $15M
+        assumptions: "10% win rate, transit-only focus"
+      },
+      {
+        name: "Base Case",
+        description: "Transit + selective commercial",
+        targetCustomers: 750,
+        winRate: 0.15,
+        avgAcv: 375000,
+        som: 42,          // $42M
+        assumptions: "15% win rate, balanced market approach"
+      },
+      {
+        name: "Aggressive",
+        description: "Full market penetration",
+        targetCustomers: 1000,
+        winRate: 0.20,
+        avgAcv: 400000,
+        som: 80,          // $80M
+        assumptions: "20% win rate, category leadership"
+      }
+    ],
+    sources: [
+      "FTA National Transit Database (~3,000 US transit operators, ~850 urban)",
+      "UITP Europe (500+ transit operators in EU)",
+      "APTA 2023 Fact Book (54,000 US transit buses)",
+      "Sustainable Bus (9,346 EU E-bus registrations Jan-Sep 2025)",
+      "Climate Group EV100 (corporate fleet commitments)"
+    ]
   },
   // Segments - based on industry analyst reports
   segments: [
@@ -961,22 +1032,105 @@ function MarketOverviewTab() {
         border: "2px solid " + COLORS.accent,
         textAlign: "center"
       }},
-        createElement("div", { style: { fontSize: "13px", color: COLORS.accent, fontWeight: "600", marginBottom: "8px" } }, "SOM (Estimate)"),
-        createElement("div", { style: { fontSize: "36px", fontWeight: "700", color: COLORS.accent } }, "$" + (MARKET_SIZE_DATA.som.projected * 1000) + "M"),
-        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "4px" } }, "by 2030"),
+        createElement("div", { style: { fontSize: "13px", color: COLORS.accent, fontWeight: "600", marginBottom: "8px" } }, "SOM (Bottom-Up)"),
+        createElement("div", { style: { fontSize: "36px", fontWeight: "700", color: COLORS.accent } }, "$" + MARKET_SIZE_DATA.som.projected + "M"),
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "4px" } }, "Base Case"),
         createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "12px", padding: "8px", backgroundColor: COLORS.background, borderRadius: "6px" } },
-          MARKET_SIZE_DATA.som.description
+          "$" + MARKET_SIZE_DATA.som.projectedLow + "M - $" + MARKET_SIZE_DATA.som.projectedHigh + "M range"
         ),
-        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "8px" } }, MARKET_SIZE_DATA.som.share + "% of SAM")
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "8px" } }, "Transit + Commercial E-Fleets")
       )
     ),
 
-    // Methodology Note
+    // Bottom-Up Model Section
+    createElement("div", { style: styles.sectionTitle }, "Bottom-Up SOM Model"),
+
+    // Target Customer Segments
+    createElement(Card, { style: { marginBottom: "20px" } },
+      createElement("div", { style: styles.cardTitle }, "🎯 Target Customer Segments (US + Europe)"),
+      createElement("table", { style: styles.table },
+        createElement("thead", null,
+          createElement("tr", null,
+            createElement("th", { style: styles.th }, "Segment"),
+            createElement("th", { style: styles.th }, "US"),
+            createElement("th", { style: styles.th }, "Europe"),
+            createElement("th", { style: styles.th }, "Total"),
+            createElement("th", { style: styles.th }, "ACV"),
+            createElement("th", { style: styles.th }, "Source")
+          )
+        ),
+        createElement("tbody", null,
+          MARKET_SIZE_DATA.bottomUpModel.segments.map(function(seg, i) {
+            return createElement("tr", { key: i },
+              createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600" }) },
+                createElement("div", null, seg.name),
+                createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, fontWeight: "400" } }, seg.description)
+              ),
+              createElement("td", { style: styles.td }, seg.usCount),
+              createElement("td", { style: styles.td }, seg.euCount),
+              createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600", color: COLORS.primary }) }, seg.total),
+              createElement("td", { style: Object.assign({}, styles.td, { color: COLORS.success }) }, "$" + (seg.acv / 1000) + "K"),
+              createElement("td", { style: Object.assign({}, styles.td, { fontSize: "11px", color: COLORS.textDim }) }, seg.source)
+            );
+          }),
+          createElement("tr", { style: { backgroundColor: COLORS.primary + "10" } },
+            createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "700" }) }, "Total Target Market"),
+            createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600" }) }, "300"),
+            createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600" }) }, "450"),
+            createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "700", color: COLORS.primary, fontSize: "16px" }) }, "750"),
+            createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600", color: COLORS.success }) }, "$300-400K"),
+            createElement("td", { style: styles.td }, "")
+          )
+        )
+      )
+    ),
+
+    // SOM Scenarios
+    createElement(Card, { style: { marginBottom: "24px" } },
+      createElement("div", { style: styles.cardTitle }, "📊 SOM Scenarios"),
+      createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" } },
+        MARKET_SIZE_DATA.bottomUpModel.scenarios.map(function(scenario, i) {
+          var colors = [COLORS.textMuted, COLORS.primary, COLORS.success];
+          var isBase = scenario.name === "Base Case";
+          return createElement("div", { key: i, style: {
+            padding: "20px",
+            backgroundColor: isBase ? COLORS.primary + "15" : COLORS.background,
+            borderRadius: "12px",
+            border: isBase ? "2px solid " + COLORS.primary : "1px solid " + COLORS.border,
+            textAlign: "center"
+          }},
+            createElement("div", { style: { fontSize: "14px", fontWeight: "600", color: colors[i], marginBottom: "8px" } }, scenario.name),
+            createElement("div", { style: { fontSize: "32px", fontWeight: "700", color: isBase ? COLORS.primary : COLORS.text } }, "$" + scenario.som + "M"),
+            createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "8px" } }, scenario.description),
+            createElement("div", { style: { marginTop: "12px", padding: "8px", backgroundColor: COLORS.card, borderRadius: "6px", fontSize: "11px", color: COLORS.textDim, textAlign: "left" } },
+              createElement("div", null, "Customers: " + scenario.targetCustomers),
+              createElement("div", null, "Win Rate: " + (scenario.winRate * 100) + "%"),
+              createElement("div", null, "Avg ACV: $" + (scenario.avgAcv / 1000) + "K")
+            ),
+            createElement("div", { style: { fontSize: "10px", color: COLORS.textDim, marginTop: "8px", fontStyle: "italic" } }, scenario.assumptions)
+          );
+        })
+      )
+    ),
+
+    // Formula & Sources
     createElement(Card, { style: { marginBottom: "24px", background: COLORS.info + "10", borderColor: COLORS.info + "40" } },
       createElement("div", { style: { fontSize: "13px", color: COLORS.textMuted, lineHeight: "1.7" } },
-        createElement("div", null, "• ", createElement("strong", { style: { color: COLORS.text } }, "TAM: "), "Directly sourced from MarketsandMarkets industry report (CAGR 13.3% through 2030)"),
-        createElement("div", { style: { marginTop: "4px" } }, "• ", createElement("strong", { style: { color: COLORS.text } }, "SAM: "), "Derived from TAM using T&L segment share (45%) per same report"),
-        createElement("div", { style: { marginTop: "4px" } }, "• ", createElement("strong", { style: { color: COLORS.text } }, "SOM: "), "Estimated at 2% of SAM for EV-specific fleet orchestration based on current EV truck penetration (~2% in EU per ACEA). Should be validated with bottom-up analysis.")
+        createElement("div", { style: { marginBottom: "12px" } },
+          createElement("strong", { style: { color: COLORS.text } }, "Formula: "),
+          "SOM = Target Customers × Win Rate × Average ACV"
+        ),
+        createElement("div", { style: { marginBottom: "8px" } },
+          createElement("strong", { style: { color: COLORS.text } }, "Base Case: "),
+          "750 customers × 15% win rate × $375K ACV = ",
+          createElement("span", { style: { color: COLORS.primary, fontWeight: "600" } }, "$42M")
+        ),
+        createElement("div", { style: { marginTop: "12px", paddingTop: "12px", borderTop: "1px solid " + COLORS.border } },
+          createElement("strong", { style: { color: COLORS.text } }, "Data Sources: ")
+        ),
+        MARKET_SIZE_DATA.bottomUpModel.sources.map(function(src, i) {
+          return createElement("div", { key: i, style: { marginTop: "4px", fontSize: "11px" } }, "• " + src);
+        })
       )
     ),
 
