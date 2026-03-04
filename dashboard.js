@@ -445,13 +445,13 @@ var COMPETITORS = [
     name: "Greenbay",
     category: "Fleet Orchestration",
     type: "orchestration",
-    founded: 2022,
+    founded: 2025,
     funding: "Private",
     valuation: null,
     revenue: null,
     customers: null,
-    focus: ["Orchestration", "EV Fleet", "Plan-Execution Sync", "Cross-system Integration"],
-    strengths: ["Purpose-built for orchestration", "EV-native", "Modern architecture"],
+    focus: ["Fleet Orchestration", "E-Bus/Transit", "Charging Management", "Yard Management", "Predictive Maintenance"],
+    strengths: ["Purpose-built for orchestration", "EV-native", "AI-powered optimization", "Transit expertise"],
     weaknesses: ["Early stage", "Building market category"],
     positioning: { x: 65, y: 85 },
     isGreenbay: true,
@@ -469,11 +469,11 @@ var COMPETITORS = [
       source: "N/A"
     },
     fleetTypes: {
-      industries: ["EV Fleets", "Transportation", "Logistics"],
-      fleetSizes: "Target: Mid-market to Enterprise",
-      vehicleTypes: ["Electric vehicles", "Mixed fleets transitioning to EV"],
+      industries: ["Public Transit", "E-Bus Fleets", "Mixed Fleet Operators"],
+      fleetSizes: "Target: Transit agencies, mid-market to enterprise",
+      vehicleTypes: ["Electric buses", "Mixed ICE/EV transit fleets"],
       notableCustomers: null,
-      source: "Company positioning"
+      source: "greenbay.solutions"
     }
   }
 ];
@@ -678,7 +678,8 @@ var DASHBOARD_SOURCES = [
     sources: [
       { name: "SEC Filings", description: "Public company financials (Samsara, Trimble)", url: "https://www.sec.gov/" },
       { name: "Crunchbase", description: "Startup funding data", url: "https://www.crunchbase.com/" },
-      { name: "PitchBook", description: "Private company valuations", url: "https://pitchbook.com/" }
+      { name: "PitchBook", description: "Private company valuations", url: "https://pitchbook.com/" },
+      { name: "Greenbay Solutions", description: "Company website", url: "https://www.greenbay.solutions" }
     ]
   },
   {
