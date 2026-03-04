@@ -165,6 +165,42 @@ var MARKET_SIZE_DATA = {
       "Climate Group EV100 (corporate fleet commitments)"
     ]
   },
+  // 5-Year ARR Projection (2026-2030)
+  arrProjection: {
+    startYear: 2026,
+    avgAcv: 375000,  // $375K base case ACV
+    // Conservative Scenario
+    conservative: [
+      { year: 2026, arr: 0.5, customers: 2, newCustomers: 2, churn: 0, growth: null, note: "Early traction" },
+      { year: 2027, arr: 1.5, customers: 5, newCustomers: 4, churn: 1, growth: 200, note: "Product-market fit" },
+      { year: 2028, arr: 4.0, customers: 13, newCustomers: 9, churn: 1, growth: 167, note: "Sales scaling" },
+      { year: 2029, arr: 8.0, customers: 25, newCustomers: 14, churn: 2, growth: 100, note: "Market expansion" },
+      { year: 2030, arr: 15.0, customers: 50, newCustomers: 28, churn: 3, growth: 88, note: "Reaching SOM" }
+    ],
+    // Base Case Scenario
+    base: [
+      { year: 2026, arr: 0.75, customers: 2, newCustomers: 2, churn: 0, growth: null, note: "Launch with 2 design partners" },
+      { year: 2027, arr: 3.0, customers: 8, newCustomers: 7, churn: 1, growth: 300, note: "Product-market fit, 4x growth" },
+      { year: 2028, arr: 10.0, customers: 27, newCustomers: 21, churn: 2, growth: 233, note: "Sales team scaling" },
+      { year: 2029, arr: 22.0, customers: 59, newCustomers: 35, churn: 3, growth: 120, note: "Geographic expansion" },
+      { year: 2030, arr: 42.0, customers: 112, newCustomers: 58, churn: 5, growth: 91, note: "Category leadership" }
+    ],
+    // Aggressive Scenario
+    aggressive: [
+      { year: 2026, arr: 1.0, customers: 3, newCustomers: 3, churn: 0, growth: null, note: "Strong launch" },
+      { year: 2027, arr: 5.0, customers: 13, newCustomers: 11, churn: 1, growth: 400, note: "Viral adoption" },
+      { year: 2028, arr: 18.0, customers: 45, newCustomers: 35, churn: 3, growth: 260, note: "Market dominance" },
+      { year: 2029, arr: 40.0, customers: 100, newCustomers: 60, churn: 5, growth: 122, note: "International scale" },
+      { year: 2030, arr: 80.0, customers: 200, newCustomers: 108, churn: 8, growth: 100, note: "Category leader" }
+    ],
+    assumptions: {
+      avgAcv: "$375K (blended across segments)",
+      churnRate: "5-10% annual (typical enterprise SaaS)",
+      salesCycle: "6-12 months for enterprise transit",
+      netRevenueRetention: "110-120% (expansion within accounts)",
+      teamScaling: "Sales team doubles each year in growth phase"
+    }
+  },
   // Segments - based on industry analyst reports
   segments: [
     { name: "Telematics & Tracking", size: 11.5, share: 35, growth: 12 },
@@ -1130,6 +1166,136 @@ function MarketOverviewTab() {
         ),
         MARKET_SIZE_DATA.bottomUpModel.sources.map(function(src, i) {
           return createElement("div", { key: i, style: { marginTop: "4px", fontSize: "11px" } }, "• " + src);
+        })
+      )
+    ),
+
+    // 5-Year ARR Projection
+    createElement("div", { style: styles.sectionTitle }, "5-Year ARR Projection (2026-2030)"),
+
+    // ARR Chart
+    createElement(Card, { style: { marginBottom: "20px" } },
+      createElement("div", { style: styles.cardTitle }, "📈 ARR Growth Scenarios"),
+      createElement(ResponsiveContainer, { width: "100%", height: 350 },
+        createElement(ComposedChart, {
+          data: MARKET_SIZE_DATA.arrProjection.base.map(function(d, i) {
+            return {
+              year: d.year,
+              conservative: MARKET_SIZE_DATA.arrProjection.conservative[i].arr,
+              base: d.arr,
+              aggressive: MARKET_SIZE_DATA.arrProjection.aggressive[i].arr,
+              customers: d.customers
+            };
+          }),
+          margin: { top: 20, right: 30, left: 20, bottom: 20 }
+        },
+          createElement(CartesianGrid, { strokeDasharray: "3 3", stroke: COLORS.border }),
+          createElement(XAxis, { dataKey: "year", stroke: COLORS.textMuted }),
+          createElement(YAxis, { yAxisId: "left", stroke: COLORS.textMuted, tickFormatter: function(v) { return "$" + v + "M"; } }),
+          createElement(YAxis, { yAxisId: "right", orientation: "right", stroke: COLORS.accent }),
+          createElement(Tooltip, {
+            contentStyle: { background: COLORS.card, border: "1px solid " + COLORS.border, borderRadius: "8px" },
+            formatter: function(value, name) {
+              if (name === "customers") return [value, "Customers (Base)"];
+              return ["$" + value + "M", name.charAt(0).toUpperCase() + name.slice(1)];
+            }
+          }),
+          createElement(Legend, null),
+          createElement(Area, { yAxisId: "left", type: "monotone", dataKey: "conservative", name: "Conservative", fill: COLORS.textMuted + "30", stroke: COLORS.textMuted, strokeWidth: 2, strokeDasharray: "5 5" }),
+          createElement(Area, { yAxisId: "left", type: "monotone", dataKey: "base", name: "Base Case", fill: COLORS.primary + "40", stroke: COLORS.primary, strokeWidth: 3 }),
+          createElement(Area, { yAxisId: "left", type: "monotone", dataKey: "aggressive", name: "Aggressive", fill: COLORS.success + "30", stroke: COLORS.success, strokeWidth: 2, strokeDasharray: "5 5" }),
+          createElement(Line, { yAxisId: "right", type: "monotone", dataKey: "customers", name: "Customers (Base)", stroke: COLORS.accent, strokeWidth: 2, dot: { fill: COLORS.accent, r: 4 } })
+        )
+      )
+    ),
+
+    // ARR Table
+    createElement(Card, { style: { marginBottom: "20px" } },
+      createElement("div", { style: styles.cardTitle }, "📊 Base Case ARR Details"),
+      createElement("table", { style: styles.table },
+        createElement("thead", null,
+          createElement("tr", null,
+            createElement("th", { style: styles.th }, "Year"),
+            createElement("th", { style: styles.th }, "ARR"),
+            createElement("th", { style: styles.th }, "YoY Growth"),
+            createElement("th", { style: styles.th }, "Customers"),
+            createElement("th", { style: styles.th }, "New"),
+            createElement("th", { style: styles.th }, "Churn"),
+            createElement("th", { style: styles.th }, "Notes")
+          )
+        ),
+        createElement("tbody", null,
+          MARKET_SIZE_DATA.arrProjection.base.map(function(row, i) {
+            return createElement("tr", { key: i, style: i === 4 ? { backgroundColor: COLORS.primary + "10" } : {} },
+              createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600" }) }, row.year),
+              createElement("td", { style: Object.assign({}, styles.td, { color: COLORS.primary, fontWeight: "700", fontSize: "16px" }) }, "$" + row.arr + "M"),
+              createElement("td", { style: Object.assign({}, styles.td, { color: row.growth ? COLORS.success : COLORS.textDim }) }, row.growth ? row.growth + "%" : "—"),
+              createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600" }) }, row.customers),
+              createElement("td", { style: Object.assign({}, styles.td, { color: COLORS.success }) }, "+" + row.newCustomers),
+              createElement("td", { style: Object.assign({}, styles.td, { color: row.churn > 0 ? COLORS.danger : COLORS.textDim }) }, row.churn > 0 ? "-" + row.churn : "—"),
+              createElement("td", { style: Object.assign({}, styles.td, { fontSize: "12px", color: COLORS.textMuted }) }, row.note)
+            );
+          })
+        )
+      )
+    ),
+
+    // ARR Scenario Comparison
+    createElement(Card, { style: { marginBottom: "20px" } },
+      createElement("div", { style: styles.cardTitle }, "🎯 2030 ARR by Scenario"),
+      createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" } },
+        [
+          { name: "Conservative", data: MARKET_SIZE_DATA.arrProjection.conservative, color: COLORS.textMuted },
+          { name: "Base Case", data: MARKET_SIZE_DATA.arrProjection.base, color: COLORS.primary },
+          { name: "Aggressive", data: MARKET_SIZE_DATA.arrProjection.aggressive, color: COLORS.success }
+        ].map(function(scenario, i) {
+          var finalYear = scenario.data[4];
+          var isBase = scenario.name === "Base Case";
+          return createElement("div", { key: i, style: {
+            padding: "20px",
+            backgroundColor: isBase ? COLORS.primary + "15" : COLORS.background,
+            borderRadius: "12px",
+            border: isBase ? "2px solid " + COLORS.primary : "1px solid " + COLORS.border,
+            textAlign: "center"
+          }},
+            createElement("div", { style: { fontSize: "14px", fontWeight: "600", color: scenario.color, marginBottom: "8px" } }, scenario.name),
+            createElement("div", { style: { fontSize: "36px", fontWeight: "700", color: isBase ? COLORS.primary : COLORS.text } }, "$" + finalYear.arr + "M"),
+            createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "4px" } }, "ARR by 2030"),
+            createElement("div", { style: { marginTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", fontSize: "12px" } },
+              createElement("div", { style: { padding: "8px", backgroundColor: COLORS.card, borderRadius: "6px" } },
+                createElement("div", { style: { color: COLORS.textDim, fontSize: "10px" } }, "Customers"),
+                createElement("div", { style: { fontWeight: "600", color: COLORS.text } }, finalYear.customers)
+              ),
+              createElement("div", { style: { padding: "8px", backgroundColor: COLORS.card, borderRadius: "6px" } },
+                createElement("div", { style: { color: COLORS.textDim, fontSize: "10px" } }, "5Y CAGR"),
+                createElement("div", { style: { fontWeight: "600", color: COLORS.success } },
+                  Math.round(Math.pow(finalYear.arr / scenario.data[0].arr, 1/4) * 100 - 100) + "%"
+                )
+              )
+            )
+          );
+        })
+      )
+    ),
+
+    // ARR Assumptions
+    createElement(Card, { style: { marginBottom: "24px", background: COLORS.accent + "10", borderColor: COLORS.accent + "40" } },
+      createElement("div", { style: styles.cardTitle }, "📋 ARR Projection Assumptions"),
+      createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" } },
+        Object.entries(MARKET_SIZE_DATA.arrProjection.assumptions).map(function(entry, i) {
+          var key = entry[0];
+          var value = entry[1];
+          var labels = {
+            avgAcv: "Average ACV",
+            churnRate: "Churn Rate",
+            salesCycle: "Sales Cycle",
+            netRevenueRetention: "Net Revenue Retention",
+            teamScaling: "Team Scaling"
+          };
+          return createElement("div", { key: i, style: { padding: "12px", backgroundColor: COLORS.card, borderRadius: "8px" } },
+            createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, marginBottom: "4px" } }, labels[key] || key),
+            createElement("div", { style: { fontSize: "13px", color: COLORS.text, fontWeight: "500" } }, value)
+          );
         })
       )
     ),
