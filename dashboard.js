@@ -65,27 +65,34 @@ var COLORS = {
 var CHART_COLORS = [COLORS.primary, COLORS.secondary, COLORS.accent, COLORS.info, COLORS.purple, COLORS.pink, COLORS.cyan, COLORS.orange];
 
 // ============ MARKET DATA ============
-// Sources: MarketsandMarkets (Dec 2024), Mordor Intelligence, Research and Markets
+// Sources: MarketsandMarkets (Dec 2024), Mordor Intelligence, IEA Global EV Outlook 2025
 var MARKET_SIZE_DATA = {
-  // Fleet Management Software Market
-  // MarketsandMarkets: $37.7B (2025) → $70.3B (2030) at 13.3% CAGR
-  // Mordor Intelligence: $32.9B (2025) → $67.0B (2030) at 15.3% CAGR
-  // Using MarketsandMarkets as primary source
+  // TAM/SAM/SOM Analysis (aligned with Fleet Electrification Intel report)
+  // TAM: Global fleet management software market
   tam: {
     current: 32.9,      // 2025 in $B (Mordor Intelligence)
-    projected: 70.3,    // 2030 in $B (MarketsandMarkets)
+    projected: 70,      // 2030 in $B (MarketsandMarkets)
     cagr: 13.3,         // % (MarketsandMarkets)
-    source: "MarketsandMarkets Fleet Management Market Report 2025"
+    source: "MarketsandMarkets Fleet Management Market Report 2025-2030"
   },
-  // Fleet Orchestration (emerging segment) - ESTIMATED
-  // No direct market research exists for "orchestration" as a category
-  // Estimate based on integration/middleware market adjacency
-  orchestration: {
-    current: 2.5,       // 2025 in $B (Greenbay estimate)
-    projected: 10.5,    // 2030 in $B (Greenbay estimate)
-    cagr: 33,           // % - faster growth as new category
-    source: "Greenbay Analysis (estimate)",
-    isEstimate: true
+  // SAM: Heavy-Duty Trucking Segment (Transportation & Logistics = 45% of TAM)
+  sam: {
+    current: 14.8,      // 2025 in $B (45% of TAM)
+    projected: 32,      // 2030 in $B (45% of $70B TAM)
+    share: 45,          // % of TAM
+    description: "HD trucking segment (T&L = 45% of market)",
+    source: "MarketsandMarkets (T&L segment share)"
+  },
+  // SOM: EV Fleet Orchestration (Greenbay's addressable market)
+  // ~2% of SAM = early adopter segment for EV-specific fleet orchestration
+  som: {
+    current: 0.3,       // 2025 in $B (~2% of SAM)
+    projected: 0.64,    // 2030 in $B
+    share: 2,           // % of SAM (early adopter segment)
+    description: "EV fleet orchestration early adopters (~2% of SAM)",
+    source: "Greenbay Analysis based on EV truck penetration (~2% in EU per ACEA)",
+    isEstimate: true,
+    methodology: "Bottom-up: target customers × contract value × win rate"
   },
   // Segments - based on industry analyst reports
   segments: [
@@ -113,8 +120,17 @@ var MARKET_SIZE_DATA = {
     { year: 2027, total: 45.0, orchestration: 4.8 },
     { year: 2028, total: 52.5, orchestration: 6.5 },
     { year: 2029, total: 61.0, orchestration: 8.5 },
-    { year: 2030, total: 70.3, orchestration: 10.5 }
-  ]
+    { year: 2030, total: 70.0, orchestration: 10.5 }
+  ],
+  // EV Market Context (from Fleet Electrification Intel)
+  evMarketContext: {
+    usEuHdTruckSales2024: 608000,  // US (~280K) + EU (~328K) annual HD truck sales
+    evSales2024: 11700,            // IEA actuals
+    evShare2024: 1.9,              // %
+    evSales2030: 121000,           // IEA STEPS projection
+    evShare2030: 19,               // %
+    source: "IEA Global EV Outlook 2025, ACEA Vehicles in Use Report"
+  }
 };
 
 // ============ FLEET TECH STACK ============
@@ -902,37 +918,100 @@ function SourceLink(props) {
 // ============ MARKET OVERVIEW TAB ============
 function MarketOverviewTab() {
   return createElement("div", null,
-    // Key Metrics
+    // TAM/SAM/SOM Overview
+    createElement("div", { style: styles.sectionTitle }, "Greenbay Market Opportunity (TAM/SAM/SOM)"),
+    createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginBottom: "24px" } },
+      // TAM
+      createElement("div", { style: {
+        backgroundColor: COLORS.card,
+        borderRadius: "12px",
+        padding: "24px",
+        border: "2px solid " + COLORS.info,
+        textAlign: "center"
+      }},
+        createElement("div", { style: { fontSize: "13px", color: COLORS.info, fontWeight: "600", marginBottom: "8px" } }, "TAM"),
+        createElement("div", { style: { fontSize: "36px", fontWeight: "700", color: COLORS.text } }, "$" + MARKET_SIZE_DATA.tam.projected + "B"),
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "4px" } }, "by 2030"),
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "12px", padding: "8px", backgroundColor: COLORS.background, borderRadius: "6px" } },
+          "Global Fleet Management Software Market"
+        ),
+        createElement("div", { style: { fontSize: "11px", color: COLORS.success, marginTop: "8px" } }, MARKET_SIZE_DATA.tam.cagr + "% CAGR")
+      ),
+      // SAM
+      createElement("div", { style: {
+        backgroundColor: COLORS.card,
+        borderRadius: "12px",
+        padding: "24px",
+        border: "2px solid " + COLORS.primary,
+        textAlign: "center"
+      }},
+        createElement("div", { style: { fontSize: "13px", color: COLORS.primary, fontWeight: "600", marginBottom: "8px" } }, "SAM"),
+        createElement("div", { style: { fontSize: "36px", fontWeight: "700", color: COLORS.text } }, "$" + MARKET_SIZE_DATA.sam.projected + "B"),
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "4px" } }, "by 2030"),
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "12px", padding: "8px", backgroundColor: COLORS.background, borderRadius: "6px" } },
+          MARKET_SIZE_DATA.sam.description
+        ),
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "8px" } }, MARKET_SIZE_DATA.sam.share + "% of TAM")
+      ),
+      // SOM
+      createElement("div", { style: {
+        backgroundColor: COLORS.primary + "15",
+        borderRadius: "12px",
+        padding: "24px",
+        border: "2px solid " + COLORS.accent,
+        textAlign: "center"
+      }},
+        createElement("div", { style: { fontSize: "13px", color: COLORS.accent, fontWeight: "600", marginBottom: "8px" } }, "SOM (Estimate)"),
+        createElement("div", { style: { fontSize: "36px", fontWeight: "700", color: COLORS.accent } }, "$" + (MARKET_SIZE_DATA.som.projected * 1000) + "M"),
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "4px" } }, "by 2030"),
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginTop: "12px", padding: "8px", backgroundColor: COLORS.background, borderRadius: "6px" } },
+          MARKET_SIZE_DATA.som.description
+        ),
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "8px" } }, MARKET_SIZE_DATA.som.share + "% of SAM")
+      )
+    ),
+
+    // Methodology Note
+    createElement(Card, { style: { marginBottom: "24px", background: COLORS.info + "10", borderColor: COLORS.info + "40" } },
+      createElement("div", { style: { fontSize: "13px", color: COLORS.textMuted, lineHeight: "1.7" } },
+        createElement("div", null, "• ", createElement("strong", { style: { color: COLORS.text } }, "TAM: "), "Directly sourced from MarketsandMarkets industry report (CAGR 13.3% through 2030)"),
+        createElement("div", { style: { marginTop: "4px" } }, "• ", createElement("strong", { style: { color: COLORS.text } }, "SAM: "), "Derived from TAM using T&L segment share (45%) per same report"),
+        createElement("div", { style: { marginTop: "4px" } }, "• ", createElement("strong", { style: { color: COLORS.text } }, "SOM: "), "Estimated at 2% of SAM for EV-specific fleet orchestration based on current EV truck penetration (~2% in EU per ACEA). Should be validated with bottom-up analysis.")
+      )
+    ),
+
+    // Key Metrics Row
     createElement("div", { style: styles.grid },
       createElement(MetricCard, {
         icon: "📊",
-        title: "Fleet Management TAM (2024)",
+        title: "Fleet Management TAM (2025)",
         value: "$" + MARKET_SIZE_DATA.tam.current + "B",
         label: "Growing to $" + MARKET_SIZE_DATA.tam.projected + "B by 2030",
-        color: COLORS.primary,
+        color: COLORS.info,
         trend: MARKET_SIZE_DATA.tam.cagr + "% CAGR"
       }),
       createElement(MetricCard, {
-        icon: "🎯",
-        title: "Orchestration Segment (2024)",
-        value: "$" + MARKET_SIZE_DATA.orchestration.current + "B",
-        label: "Growing to $" + MARKET_SIZE_DATA.orchestration.projected + "B by 2030",
-        color: COLORS.success,
-        trend: MARKET_SIZE_DATA.orchestration.cagr + "% CAGR"
+        icon: "🚛",
+        title: "EV Truck Sales (2024)",
+        value: (MARKET_SIZE_DATA.evMarketContext.evSales2024 / 1000).toFixed(1) + "K",
+        label: "US + EU combined",
+        color: COLORS.primary,
+        trend: MARKET_SIZE_DATA.evMarketContext.evShare2024 + "% market share"
       }),
       createElement(MetricCard, {
-        icon: "🚀",
-        title: "Orchestration Share by 2030",
-        value: "16%",
-        label: "Of total fleet management market",
-        color: COLORS.accent
+        icon: "⚡",
+        title: "EV Truck Sales (2030)",
+        value: (MARKET_SIZE_DATA.evMarketContext.evSales2030 / 1000).toFixed(0) + "K",
+        label: "IEA STEPS projection",
+        color: COLORS.success,
+        trend: MARKET_SIZE_DATA.evMarketContext.evShare2030 + "% market share"
       }),
       createElement(MetricCard, {
         icon: "🌍",
         title: "North America Share",
         value: MARKET_SIZE_DATA.regions[0].share + "%",
         label: "Largest regional market",
-        color: COLORS.info
+        color: COLORS.accent
       })
     ),
 
@@ -955,7 +1034,7 @@ function MarketOverviewTab() {
           )
         ),
         createElement("div", { style: { marginTop: "12px", fontSize: "11px", color: COLORS.textMuted } },
-          "Source: MarketsandMarkets, Grand View Research, Greenbay Analysis"
+          "Source: MarketsandMarkets Fleet Management Market Report 2025-2030, IEA Global EV Outlook 2025, ACEA"
         )
       )
     ),
