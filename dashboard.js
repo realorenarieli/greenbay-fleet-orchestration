@@ -182,7 +182,7 @@ var ORCHESTRATION_VALUE_PROPS = [
 ];
 
 // ============ COMPETITIVE LANDSCAPE ============
-// Sources: SEC filings, Crunchbase, PitchBook, company announcements
+// Sources: SEC filings, Crunchbase, PitchBook, company announcements, vendor websites
 var COMPETITORS = [
   // Point Solutions - Telematics
   {
@@ -198,7 +198,28 @@ var COMPETITORS = [
     focus: ["Telematics", "Video Safety", "Equipment Monitoring"],
     strengths: ["Easy deployment", "Strong brand", "Video AI"],
     weaknesses: ["Limited orchestration", "Execution-focused"],
-    positioning: { x: 75, y: 30 }  // x: enterprise focus, y: orchestration depth
+    positioning: { x: 75, y: 30 },  // x: enterprise focus, y: orchestration depth
+    // Pricing data - Sources: tech.co, oiengine.com, multiple industry reviews
+    pricing: {
+      perVehicleMonth: "$27-33",
+      hardwareCost: "$99-148 (device) or $350-500 with installation",
+      contractLength: "3 years (required)",
+      paymentTerms: "Prepaid upfront for SMB",
+      source: "Industry reviews (tech.co, oiengine.com, 2025)"
+    },
+    pricingStrategy: {
+      model: "Quote-based, tiered by features",
+      approach: "No public pricing. 3-year contract minimum. Hardware bundled or separate. Volume discounts for larger fleets.",
+      notes: "30-day free trial available",
+      source: "Samsara website, industry reviews"
+    },
+    fleetTypes: {
+      industries: ["Transportation & Logistics", "Construction", "Food & Beverage", "Field Services", "Manufacturing", "Passenger Transit", "Utilities", "Oil & Gas", "Public Sector"],
+      fleetSizes: "SMB to Enterprise (10,000+ customers)",
+      vehicleTypes: ["Light-duty", "Heavy-duty trucks", "Trailers", "Heavy equipment"],
+      notableCustomers: ["Alaska Airlines", "Sobeys", "Swissport"],
+      source: "Samsara website, company reports"
+    }
   },
   {
     name: "Geotab",
@@ -214,7 +235,28 @@ var COMPETITORS = [
     focus: ["Telematics", "Fleet Analytics", "EV Solutions"],
     strengths: ["Open platform", "Data depth", "Global reach", "No outside investors"],
     weaknesses: ["Complex for SMB", "Integration heavy"],
-    positioning: { x: 60, y: 35 }
+    positioning: { x: 60, y: 35 },
+    // Pricing data - Sources: tech.co, Geotab blogs, industry reviews
+    pricing: {
+      perVehicleMonth: "$30-40 (with hardware bundle)",
+      hardwareCost: "$80-120 (buy-to-own)",
+      contractLength: "Varies by reseller",
+      paymentTerms: "Set by authorized resellers",
+      source: "tech.co, Geotab support docs, 2025"
+    },
+    pricingStrategy: {
+      model: "Tiered rate plans via reseller network",
+      approach: "Sold through authorized resellers (prices vary). Four tiers: Base, Regulatory, Pro, ProPlus with increasing features.",
+      notes: "Pricing not standardized - depends on reseller and fleet needs",
+      source: "Geotab rate plan documentation"
+    },
+    fleetTypes: {
+      industries: ["Construction", "Courier & Delivery", "Utilities", "Oil, Gas & Mining", "Food & Beverage", "Waste & Recycling", "Logistics", "Public Transport", "Government"],
+      fleetSizes: "SMB to Enterprise (up to 300K vehicles)",
+      vehicleTypes: ["Light-duty", "Heavy-duty", "EVs", "Mixed fleets"],
+      notableCustomers: ["U.S. Air Force (21K vehicles)", "U.S. DHS"],
+      source: "Geotab website, Wikipedia, government contract announcements"
+    }
   },
   {
     name: "Motive",
@@ -229,7 +271,28 @@ var COMPETITORS = [
     focus: ["ELD Compliance", "Safety", "Spend Management"],
     strengths: ["SMB focus", "Compliance expertise", "Easy UX"],
     weaknesses: ["Less enterprise", "Narrow scope"],
-    positioning: { x: 35, y: 25 }
+    positioning: { x: 35, y: 25 },
+    // Pricing data - Sources: tech.co, SelectHub, industry reviews
+    pricing: {
+      perVehicleMonth: "$35-65+ (depending on features)",
+      hardwareCost: "Included or leased",
+      contractLength: "1-3 years typical",
+      paymentTerms: "Not publicly disclosed",
+      source: "tech.co, SelectHub, industry estimates 2025"
+    },
+    pricingStrategy: {
+      model: "Quote-based (no public pricing)",
+      approach: "Single plan fits all approach (post-2022 rebrand). Previously had tiered: Free, Starter ($20), Pro ($35), Enterprise.",
+      notes: "Free trial and demo available. Hardware pricing not disclosed.",
+      source: "Motive website, tech.co review"
+    },
+    fleetTypes: {
+      industries: ["Trucking & Logistics", "Construction", "Oil & Gas", "Food & Beverage", "Field Service", "Agriculture", "Passenger Transit", "Delivery", "Utilities & Telecom", "Waste & Recycling", "Public Sector"],
+      fleetSizes: "SMB to Fortune 500",
+      vehicleTypes: ["Trucks", "Commercial vehicles", "Equipment"],
+      notableCustomers: ["Halliburton", "KONE", "Komatsu", "NBC Universal", "Maersk"],
+      source: "Motive website, CB Insights"
+    }
   },
   {
     name: "Verizon Connect",
@@ -244,7 +307,28 @@ var COMPETITORS = [
     focus: ["Telematics", "Workforce Management", "Compliance"],
     strengths: ["Carrier backing", "Network coverage", "Scale"],
     weaknesses: ["Legacy tech debt", "Slow innovation"],
-    positioning: { x: 70, y: 20 }
+    positioning: { x: 70, y: 20 },
+    // Pricing data - Sources: business.com, tech.co, ExpertMarket
+    pricing: {
+      perVehicleMonth: "$23.50-30",
+      hardwareCost: "Bundled (no extra cost), self-install option",
+      contractLength: "3 years (required with hardware)",
+      paymentTerms: "Upfront payment, no refunds after 30 days",
+      source: "business.com, tech.co, ExpertMarket 2025"
+    },
+    pricingStrategy: {
+      model: "Quote-based with bundled hardware",
+      approach: "3-year contract minimum. Hardware included. Cannot remove trucks from contract. Add-ons: AI dashcams, field service, asset tracking.",
+      notes: "GSA, Sourcewell, NASPO approved vendor for government",
+      source: "Verizon Connect website, industry reviews"
+    },
+    fleetTypes: {
+      industries: ["Construction (13%)", "Transportation/Trucking (7%)", "IT Services (7%)", "Oil & Energy (6%)", "Food & Beverage", "Retail", "Government/Public Sector", "Field Services", "HVAC/Plumbing"],
+      fleetSizes: "25% small (<50), 45% mid-size, 29% enterprise (>1000)",
+      vehicleTypes: ["Commercial vehicles", "Service vehicles", "Delivery fleets"],
+      notableCustomers: ["Largest state/municipal government customer base"],
+      source: "Enlyft market analysis, Verizon Connect website"
+    }
   },
   // Platform Players
   {
@@ -261,7 +345,28 @@ var COMPETITORS = [
     focus: ["TMS", "Routing", "Mobility", "Visibility", "Transporeon"],
     strengths: ["Full suite", "Enterprise relationships", "Breadth"],
     weaknesses: ["Complex", "Slower to adapt", "Divesting telematics"],
-    positioning: { x: 85, y: 50 }
+    positioning: { x: 85, y: 50 },
+    // Pricing data - Limited public information
+    pricing: {
+      perVehicleMonth: "Not publicly disclosed",
+      hardwareCost: "Subscription bundles available (no upfront CapEx option)",
+      contractLength: "Custom enterprise agreements",
+      paymentTerms: "Not disclosed",
+      source: "Trimble website - quote required"
+    },
+    pricingStrategy: {
+      model: "Enterprise quote-based",
+      approach: "Higher-end pricing targeting large enterprises. Flexible bundles for hardware + software. Focus on complex transportation needs.",
+      notes: "Personalized pricing breakdowns, not generic estimates",
+      source: "Trimble website, industry reviews"
+    },
+    fleetTypes: {
+      industries: ["Trucking", "Logistics", "3PL/Brokers", "Shippers"],
+      fleetSizes: "Enterprise (large carriers, shippers, 3PLs)",
+      vehicleTypes: ["OTR trucks", "Regional fleets", "Multi-modal"],
+      notableCustomers: ["Evans Distribution Systems", "MODE Global/Transporeon"],
+      source: "Trimble website, case studies"
+    }
   },
   {
     name: "Omnitracs",
@@ -276,7 +381,28 @@ var COMPETITORS = [
     focus: ["TMS", "Telematics", "Compliance", "Analytics"],
     strengths: ["Trucking heritage", "Compliance depth"],
     weaknesses: ["Aging platform", "PE ownership challenges"],
-    positioning: { x: 80, y: 45 }
+    positioning: { x: 80, y: 45 },
+    // Pricing data - Not publicly available
+    pricing: {
+      perVehicleMonth: "Not publicly disclosed",
+      hardwareCost: "Not publicly disclosed",
+      contractLength: "Not publicly disclosed",
+      paymentTerms: "Not publicly disclosed",
+      source: "No public pricing information available"
+    },
+    pricingStrategy: {
+      model: "Enterprise quote-based",
+      approach: "Traditional enterprise sales model. No public pricing. Focus on large trucking fleets.",
+      notes: "Now part of Solera Holdings (PE-backed)",
+      source: "Industry knowledge"
+    },
+    fleetTypes: {
+      industries: ["Trucking", "Transportation", "Logistics"],
+      fleetSizes: "Mid-market to Enterprise",
+      vehicleTypes: ["OTR trucks", "Commercial fleets"],
+      notableCustomers: null,
+      source: "Omnitracs website"
+    }
   },
   {
     name: "Platform Science",
@@ -291,7 +417,28 @@ var COMPETITORS = [
     focus: ["Open Platform", "App Marketplace", "Telematics", "OEM Partnerships"],
     strengths: ["Modern architecture", "OEM relationships (DTNA, Paccar)", "Acquiring Trimble telematics"],
     weaknesses: ["Revenue not proven", "Integration complexity"],
-    positioning: { x: 55, y: 55 }
+    positioning: { x: 55, y: 55 },
+    // Pricing data - Not publicly available (B2B/OEM focus)
+    pricing: {
+      perVehicleMonth: "Not publicly disclosed",
+      hardwareCost: "Not publicly disclosed",
+      contractLength: "Not publicly disclosed",
+      paymentTerms: "Not publicly disclosed",
+      source: "No public pricing - OEM partnership model"
+    },
+    pricingStrategy: {
+      model: "OEM partnership + marketplace",
+      approach: "Platform embedded in OEM vehicles (DTNA, Paccar). Revenue through OEM partnerships and app marketplace.",
+      notes: "Acquired Trimble telematics units in 2025",
+      source: "Company announcements, Crunchbase"
+    },
+    fleetTypes: {
+      industries: ["Trucking", "Logistics", "Transportation"],
+      fleetSizes: "Enterprise (via OEM partnerships)",
+      vehicleTypes: ["Class 8 trucks (DTNA, Paccar OEM integration)"],
+      notableCustomers: ["Daimler Truck North America", "Paccar"],
+      source: "Platform Science website, press releases"
+    }
   },
   // Emerging Orchestration
   {
@@ -307,7 +454,27 @@ var COMPETITORS = [
     strengths: ["Purpose-built for orchestration", "EV-native", "Modern architecture"],
     weaknesses: ["Early stage", "Building market category"],
     positioning: { x: 65, y: 85 },
-    isGreenbay: true
+    isGreenbay: true,
+    pricing: {
+      perVehicleMonth: "Not publicly disclosed",
+      hardwareCost: "Software-only (no hardware)",
+      contractLength: "Not disclosed",
+      paymentTerms: "Not disclosed",
+      source: "Early-stage, pricing not public"
+    },
+    pricingStrategy: {
+      model: "Not disclosed",
+      approach: "Early-stage company, pricing model in development",
+      notes: null,
+      source: "N/A"
+    },
+    fleetTypes: {
+      industries: ["EV Fleets", "Transportation", "Logistics"],
+      fleetSizes: "Target: Mid-market to Enterprise",
+      vehicleTypes: ["Electric vehicles", "Mixed fleets transitioning to EV"],
+      notableCustomers: null,
+      source: "Company positioning"
+    }
   }
 ];
 
@@ -512,6 +679,16 @@ var DASHBOARD_SOURCES = [
       { name: "SEC Filings", description: "Public company financials (Samsara, Trimble)", url: "https://www.sec.gov/" },
       { name: "Crunchbase", description: "Startup funding data", url: "https://www.crunchbase.com/" },
       { name: "PitchBook", description: "Private company valuations", url: "https://pitchbook.com/" }
+    ]
+  },
+  {
+    category: "Pricing & Reviews",
+    sources: [
+      { name: "tech.co", description: "Fleet management reviews and pricing comparisons (2025)", url: "https://tech.co/fleet-management" },
+      { name: "business.com", description: "Vendor pricing analysis", url: "https://www.business.com/" },
+      { name: "SelectHub", description: "Software pricing and feature comparisons", url: "https://www.selecthub.com/" },
+      { name: "Capterra", description: "User reviews and pricing data", url: "https://www.capterra.com/" },
+      { name: "oiengine.com", description: "Fleet tracking reviews", url: "https://oiengine.com/" }
     ]
   }
 ];
@@ -1133,6 +1310,87 @@ function CompetitiveLandscapeTab() {
                 })
               )
             )
+          );
+        })
+      )
+    ),
+
+    // Pricing Comparison Section
+    createElement("div", { style: { marginTop: "32px" } },
+      createElement("div", { style: styles.sectionTitle }, "Pricing Comparison"),
+      createElement("div", { style: { overflowX: "auto" } },
+        createElement("table", { style: styles.table },
+          createElement("thead", null,
+            createElement("tr", null,
+              createElement("th", { style: styles.th }, "Company"),
+              createElement("th", { style: styles.th }, "Per Vehicle/Month"),
+              createElement("th", { style: styles.th }, "Hardware"),
+              createElement("th", { style: styles.th }, "Contract"),
+              createElement("th", { style: styles.th }, "Pricing Model"),
+              createElement("th", { style: styles.th }, "Source")
+            )
+          ),
+          createElement("tbody", null,
+            filteredCompetitors.filter(function(c) { return c.pricing; }).map(function(comp, i) {
+              var isNotDisclosed = comp.pricing.perVehicleMonth === "Not publicly disclosed";
+              return createElement("tr", { key: i },
+                createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600", color: comp.isGreenbay ? COLORS.primary : COLORS.text }) }, comp.name),
+                createElement("td", { style: Object.assign({}, styles.td, { color: isNotDisclosed ? COLORS.textDim : COLORS.success, fontStyle: isNotDisclosed ? "italic" : "normal" }) }, comp.pricing.perVehicleMonth),
+                createElement("td", { style: Object.assign({}, styles.td, { fontSize: "12px" }) }, comp.pricing.hardwareCost),
+                createElement("td", { style: styles.td }, comp.pricing.contractLength),
+                createElement("td", { style: Object.assign({}, styles.td, { fontSize: "12px" }) }, comp.pricingStrategy ? comp.pricingStrategy.model : "N/A"),
+                createElement("td", { style: Object.assign({}, styles.td, { fontSize: "11px", color: COLORS.textDim }) }, comp.pricing.source)
+              );
+            })
+          )
+        )
+      ),
+      createElement("div", { style: { marginTop: "12px", padding: "12px", backgroundColor: COLORS.info + "10", borderRadius: "8px", fontSize: "12px", color: COLORS.textMuted } },
+        createElement("strong", { style: { color: COLORS.info } }, "Note: "),
+        "Pricing varies by fleet size, features, and negotiation. \"Not publicly disclosed\" indicates the company does not publish pricing. All figures are estimates from industry reviews and should be verified with vendors."
+      )
+    ),
+
+    // Fleet Types Served Section
+    createElement("div", { style: { marginTop: "32px" } },
+      createElement("div", { style: styles.sectionTitle }, "Fleet Types & Industries Served"),
+      createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "20px" } },
+        filteredCompetitors.filter(function(c) { return c.fleetTypes && c.fleetTypes.industries; }).map(function(comp, i) {
+          return createElement(Card, { key: i, style: comp.isGreenbay ? { borderColor: COLORS.primary } : {} },
+            createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" } },
+              createElement("h3", { style: { fontSize: "16px", fontWeight: "600", color: comp.isGreenbay ? COLORS.primary : COLORS.text } }, comp.name),
+              createElement(Badge, { variant: comp.type === "orchestration" ? "primary" : comp.type === "platform" ? "purple" : "info" }, comp.type)
+            ),
+            createElement("div", { style: { marginBottom: "12px" } },
+              createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, fontWeight: "600", marginBottom: "6px" } }, "INDUSTRIES"),
+              createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: "6px" } },
+                comp.fleetTypes.industries.slice(0, 6).map(function(ind, j) {
+                  return createElement("span", { key: j, style: {
+                    padding: "4px 8px", backgroundColor: COLORS.info + "15", borderRadius: "4px", fontSize: "11px", color: COLORS.info
+                  }}, ind);
+                }),
+                comp.fleetTypes.industries.length > 6 ? createElement("span", { style: {
+                  padding: "4px 8px", backgroundColor: COLORS.background, borderRadius: "4px", fontSize: "11px", color: COLORS.textMuted
+                }}, "+" + (comp.fleetTypes.industries.length - 6) + " more") : null
+              )
+            ),
+            createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "12px" } },
+              createElement("div", null,
+                createElement("div", { style: { color: COLORS.textMuted, fontWeight: "600", marginBottom: "4px", fontSize: "11px" } }, "FLEET SIZES"),
+                createElement("div", { style: { color: COLORS.text } }, comp.fleetTypes.fleetSizes)
+              ),
+              createElement("div", null,
+                createElement("div", { style: { color: COLORS.textMuted, fontWeight: "600", marginBottom: "4px", fontSize: "11px" } }, "VEHICLE TYPES"),
+                createElement("div", { style: { color: COLORS.text } }, comp.fleetTypes.vehicleTypes ? comp.fleetTypes.vehicleTypes.join(", ") : "N/A")
+              )
+            ),
+            comp.fleetTypes.notableCustomers ? createElement("div", { style: { marginTop: "12px", padding: "8px", backgroundColor: COLORS.background, borderRadius: "6px" } },
+              createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, marginBottom: "4px" } }, "Notable Customers"),
+              createElement("div", { style: { fontSize: "12px", color: COLORS.accent } },
+                Array.isArray(comp.fleetTypes.notableCustomers) ? comp.fleetTypes.notableCustomers.join(", ") : comp.fleetTypes.notableCustomers
+              )
+            ) : null,
+            createElement("div", { style: { marginTop: "8px", fontSize: "10px", color: COLORS.textDim } }, "Source: " + comp.fleetTypes.source)
           );
         })
       )
