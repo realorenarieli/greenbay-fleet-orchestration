@@ -306,6 +306,47 @@ var MARKET_SIZE_DATA = {
   }
 };
 
+// ── CANONICAL DATA OVERLAY ──────────────────────────────────────────────────
+// Merge canonical values from shared.json over inline MARKET_SIZE_DATA.
+// Inline data above serves as fallback.
+(function applyCanonical() {
+  var C = window.__GREENBAY_CANONICAL__;
+  if (!C) return;
+  if (C.market_sizing) {
+    var ms = C.market_sizing;
+    if (ms.tam) {
+      MARKET_SIZE_DATA.tam.current = ms.tam.current_usd_b || MARKET_SIZE_DATA.tam.current;
+      MARKET_SIZE_DATA.tam.projected = ms.tam.projected_usd_b || MARKET_SIZE_DATA.tam.projected;
+      MARKET_SIZE_DATA.tam.cagr = ms.tam.cagr_pct || MARKET_SIZE_DATA.tam.cagr;
+    }
+    if (ms.sam) {
+      MARKET_SIZE_DATA.sam.current = ms.sam.current_usd_b || MARKET_SIZE_DATA.sam.current;
+      MARKET_SIZE_DATA.sam.projected = ms.sam.projected_usd_b || MARKET_SIZE_DATA.sam.projected;
+      MARKET_SIZE_DATA.sam.share = ms.sam.share_of_tam_pct || MARKET_SIZE_DATA.sam.share;
+    }
+    if (ms.som) {
+      MARKET_SIZE_DATA.som.projected = ms.som.base_usd_m || MARKET_SIZE_DATA.som.projected;
+      MARKET_SIZE_DATA.som.projectedLow = ms.som.conservative_usd_m || MARKET_SIZE_DATA.som.projectedLow;
+      MARKET_SIZE_DATA.som.projectedHigh = ms.som.aggressive_usd_m || MARKET_SIZE_DATA.som.projectedHigh;
+    }
+  }
+  if (C.unit_economics) {
+    var ue = C.unit_economics;
+    MARKET_SIZE_DATA.unitEconomics.acv = ue.acv_usd || MARKET_SIZE_DATA.unitEconomics.acv;
+    MARKET_SIZE_DATA.unitEconomics.grossMargin = (ue.gross_margin_pct || 72) / 100;
+    MARKET_SIZE_DATA.unitEconomics.cac = ue.cac_usd || MARKET_SIZE_DATA.unitEconomics.cac;
+    MARKET_SIZE_DATA.unitEconomics.customerLifetime = ue.customer_lifetime_years || MARKET_SIZE_DATA.unitEconomics.customerLifetime;
+    MARKET_SIZE_DATA.unitEconomics.annualChurn = (ue.annual_churn_pct || 5) / 100;
+    MARKET_SIZE_DATA.unitEconomics.nrr = (ue.nrr_pct || 115) / 100;
+  }
+  if (C.fleet_stats && C.fleet_stats.ev_market_context) {
+    var ev = C.fleet_stats.ev_market_context;
+    MARKET_SIZE_DATA.evMarketContext.evSales2024 = ev.ev_sales_2024_us_eu || MARKET_SIZE_DATA.evMarketContext.evSales2024;
+    MARKET_SIZE_DATA.evMarketContext.evShare2024 = ev.ev_share_2024_pct || MARKET_SIZE_DATA.evMarketContext.evShare2024;
+  }
+  console.log('Canonical data applied (v' + (C._canonical_version || '?') + ')');
+})();
+
 // ============ FLEET TECH STACK ============
 var TECH_STACK_LAYERS = [
   {
@@ -2380,7 +2421,10 @@ function App() {
 
     // Footer
     createElement("footer", { style: styles.footer },
-      "© 2026 Greenbay. All rights reserved."
+      "© 2026 Greenbay. All rights reserved.",
+      createElement("div", { style: { marginTop: "4px", fontSize: "10px", opacity: 0.6 } },
+        "Data synced from canonical v" + ((window.__GREENBAY_CANONICAL__ && window.__GREENBAY_CANONICAL__._canonical_version) || "local")
+      )
     )
   );
 }
