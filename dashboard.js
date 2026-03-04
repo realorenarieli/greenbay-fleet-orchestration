@@ -201,6 +201,72 @@ var MARKET_SIZE_DATA = {
       teamScaling: "Sales team doubles each year in growth phase"
     }
   },
+  // Unit Economics
+  unitEconomics: {
+    // Core Metrics
+    acv: 375000,              // $375K average contract value
+    grossMargin: 0.72,        // 72% (70-75% range, some services)
+    cac: 125000,              // $125K (100-150K range, enterprise sales)
+    customerLifetime: 10,     // 10 years (5% annual churn)
+    annualChurn: 0.05,        // 5% logo churn
+    nrr: 1.15,                // 115% net revenue retention
+    // Calculated Metrics
+    get ltv() { return this.acv * this.grossMargin * this.customerLifetime; },           // $2.7M
+    get ltvCacRatio() { return this.ltv / this.cac; },                                    // 21.6x
+    get cacPaybackMonths() { return this.cac / (this.acv * this.grossMargin / 12); },    // 5.6 months
+    get grossProfit() { return this.acv * this.grossMargin; },                            // $270K
+    // Scenario Analysis
+    scenarios: [
+      {
+        name: "Conservative",
+        grossMargin: 0.68,
+        cac: 150000,
+        lifetime: 7,
+        nrr: 1.08,
+        description: "Higher CAC, more churn, lower margins"
+      },
+      {
+        name: "Base Case",
+        grossMargin: 0.72,
+        cac: 125000,
+        lifetime: 10,
+        nrr: 1.15,
+        description: "Balanced assumptions"
+      },
+      {
+        name: "Optimistic",
+        grossMargin: 0.78,
+        cac: 100000,
+        lifetime: 12,
+        nrr: 1.22,
+        description: "Strong product-led growth, high retention"
+      }
+    ],
+    // Cost Structure (% of revenue at scale)
+    costStructure: {
+      cogs: 0.28,             // 28% - hosting, support, implementation
+      salesMarketing: 0.35,   // 35% - sales team, marketing, events
+      rd: 0.20,               // 20% - engineering, product
+      ga: 0.10,               // 10% - admin, legal, finance
+      operatingMargin: 0.07   // 7% operating margin at scale
+    },
+    // Benchmarks for comparison
+    benchmarks: {
+      saasMedianLtvCac: 3.0,
+      saasTopQuartileLtvCac: 5.0,
+      saasMedianCacPayback: 18,
+      saasMedianGrossMargin: 0.75,
+      saasMedianNrr: 1.10
+    },
+    // Sources and notes
+    sources: [
+      "Gross Margin: 70-75% typical for enterprise SaaS with implementation services",
+      "CAC: $100-150K for enterprise sales with 6-12 month cycles",
+      "Lifetime: 10 years based on 5% annual churn (mission-critical infrastructure)",
+      "NRR: 115% assuming 10% expansion, 5% churn within existing accounts",
+      "Benchmarks: OpenView Partners SaaS Benchmarks 2024, Bessemer Cloud Index"
+    ]
+  },
   // Segments - based on industry analyst reports
   segments: [
     { name: "Telematics & Tracking", size: 11.5, share: 35, growth: 12 },
@@ -1297,6 +1363,199 @@ function MarketOverviewTab() {
             createElement("div", { style: { fontSize: "13px", color: COLORS.text, fontWeight: "500" } }, value)
           );
         })
+      )
+    ),
+
+    // Unit Economics Section
+    createElement("div", { style: styles.sectionTitle }, "Unit Economics"),
+
+    // Key Unit Economics Metrics
+    createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "20px" } },
+      // LTV
+      createElement("div", { style: {
+        backgroundColor: COLORS.card,
+        borderRadius: "12px",
+        padding: "20px",
+        border: "1px solid " + COLORS.border,
+        textAlign: "center"
+      }},
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginBottom: "8px" } }, "Lifetime Value (LTV)"),
+        createElement("div", { style: { fontSize: "32px", fontWeight: "700", color: COLORS.success } },
+          "$" + (MARKET_SIZE_DATA.unitEconomics.acv * MARKET_SIZE_DATA.unitEconomics.grossMargin * MARKET_SIZE_DATA.unitEconomics.customerLifetime / 1000000).toFixed(1) + "M"
+        ),
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "4px" } }, "ACV × Gross Margin × Lifetime")
+      ),
+      // CAC
+      createElement("div", { style: {
+        backgroundColor: COLORS.card,
+        borderRadius: "12px",
+        padding: "20px",
+        border: "1px solid " + COLORS.border,
+        textAlign: "center"
+      }},
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginBottom: "8px" } }, "Customer Acquisition Cost"),
+        createElement("div", { style: { fontSize: "32px", fontWeight: "700", color: COLORS.accent } },
+          "$" + (MARKET_SIZE_DATA.unitEconomics.cac / 1000) + "K"
+        ),
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "4px" } }, "Enterprise sales motion")
+      ),
+      // LTV:CAC
+      createElement("div", { style: {
+        backgroundColor: COLORS.primary + "15",
+        borderRadius: "12px",
+        padding: "20px",
+        border: "2px solid " + COLORS.primary,
+        textAlign: "center"
+      }},
+        createElement("div", { style: { fontSize: "12px", color: COLORS.primary, marginBottom: "8px" } }, "LTV:CAC Ratio"),
+        createElement("div", { style: { fontSize: "32px", fontWeight: "700", color: COLORS.primary } },
+          ((MARKET_SIZE_DATA.unitEconomics.acv * MARKET_SIZE_DATA.unitEconomics.grossMargin * MARKET_SIZE_DATA.unitEconomics.customerLifetime) / MARKET_SIZE_DATA.unitEconomics.cac).toFixed(1) + "x"
+        ),
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "4px" } }, "Target: >3x (SaaS benchmark)")
+      ),
+      // CAC Payback
+      createElement("div", { style: {
+        backgroundColor: COLORS.card,
+        borderRadius: "12px",
+        padding: "20px",
+        border: "1px solid " + COLORS.border,
+        textAlign: "center"
+      }},
+        createElement("div", { style: { fontSize: "12px", color: COLORS.textMuted, marginBottom: "8px" } }, "CAC Payback"),
+        createElement("div", { style: { fontSize: "32px", fontWeight: "700", color: COLORS.info } },
+          Math.round(MARKET_SIZE_DATA.unitEconomics.cac / (MARKET_SIZE_DATA.unitEconomics.acv * MARKET_SIZE_DATA.unitEconomics.grossMargin / 12)) + " mo"
+        ),
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "4px" } }, "Months to recover CAC")
+      )
+    ),
+
+    // Additional Metrics Row
+    createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "20px" } },
+      createElement("div", { style: { backgroundColor: COLORS.card, borderRadius: "12px", padding: "16px", border: "1px solid " + COLORS.border, textAlign: "center" } },
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, marginBottom: "4px" } }, "Average ACV"),
+        createElement("div", { style: { fontSize: "24px", fontWeight: "700", color: COLORS.text } }, "$" + (MARKET_SIZE_DATA.unitEconomics.acv / 1000) + "K")
+      ),
+      createElement("div", { style: { backgroundColor: COLORS.card, borderRadius: "12px", padding: "16px", border: "1px solid " + COLORS.border, textAlign: "center" } },
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, marginBottom: "4px" } }, "Gross Margin"),
+        createElement("div", { style: { fontSize: "24px", fontWeight: "700", color: COLORS.text } }, (MARKET_SIZE_DATA.unitEconomics.grossMargin * 100) + "%")
+      ),
+      createElement("div", { style: { backgroundColor: COLORS.card, borderRadius: "12px", padding: "16px", border: "1px solid " + COLORS.border, textAlign: "center" } },
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, marginBottom: "4px" } }, "Net Revenue Retention"),
+        createElement("div", { style: { fontSize: "24px", fontWeight: "700", color: COLORS.success } }, (MARKET_SIZE_DATA.unitEconomics.nrr * 100) + "%")
+      ),
+      createElement("div", { style: { backgroundColor: COLORS.card, borderRadius: "12px", padding: "16px", border: "1px solid " + COLORS.border, textAlign: "center" } },
+        createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, marginBottom: "4px" } }, "Customer Lifetime"),
+        createElement("div", { style: { fontSize: "24px", fontWeight: "700", color: COLORS.text } }, MARKET_SIZE_DATA.unitEconomics.customerLifetime + " yrs")
+      )
+    ),
+
+    // Unit Economics Scenarios
+    createElement(Card, { style: { marginBottom: "20px" } },
+      createElement("div", { style: styles.cardTitle }, "📊 Unit Economics by Scenario"),
+      createElement("table", { style: styles.table },
+        createElement("thead", null,
+          createElement("tr", null,
+            createElement("th", { style: styles.th }, "Scenario"),
+            createElement("th", { style: styles.th }, "Gross Margin"),
+            createElement("th", { style: styles.th }, "CAC"),
+            createElement("th", { style: styles.th }, "Lifetime"),
+            createElement("th", { style: styles.th }, "NRR"),
+            createElement("th", { style: styles.th }, "LTV"),
+            createElement("th", { style: styles.th }, "LTV:CAC"),
+            createElement("th", { style: styles.th }, "Payback")
+          )
+        ),
+        createElement("tbody", null,
+          MARKET_SIZE_DATA.unitEconomics.scenarios.map(function(scenario, i) {
+            var ltv = MARKET_SIZE_DATA.unitEconomics.acv * scenario.grossMargin * scenario.lifetime;
+            var ltvCac = ltv / scenario.cac;
+            var payback = scenario.cac / (MARKET_SIZE_DATA.unitEconomics.acv * scenario.grossMargin / 12);
+            var isBase = scenario.name === "Base Case";
+            return createElement("tr", { key: i, style: isBase ? { backgroundColor: COLORS.primary + "10" } : {} },
+              createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600" }) },
+                createElement("div", null, scenario.name),
+                createElement("div", { style: { fontSize: "10px", color: COLORS.textDim, fontWeight: "400" } }, scenario.description)
+              ),
+              createElement("td", { style: styles.td }, (scenario.grossMargin * 100) + "%"),
+              createElement("td", { style: styles.td }, "$" + (scenario.cac / 1000) + "K"),
+              createElement("td", { style: styles.td }, scenario.lifetime + " yrs"),
+              createElement("td", { style: Object.assign({}, styles.td, { color: scenario.nrr >= 1.1 ? COLORS.success : COLORS.text }) }, (scenario.nrr * 100) + "%"),
+              createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "600", color: COLORS.success }) }, "$" + (ltv / 1000000).toFixed(1) + "M"),
+              createElement("td", { style: Object.assign({}, styles.td, { fontWeight: "700", color: ltvCac >= 10 ? COLORS.primary : COLORS.text }) }, ltvCac.toFixed(1) + "x"),
+              createElement("td", { style: Object.assign({}, styles.td, { color: payback <= 12 ? COLORS.success : COLORS.accent }) }, Math.round(payback) + " mo")
+            );
+          })
+        )
+      )
+    ),
+
+    // Cost Structure at Scale
+    createElement(Card, { style: { marginBottom: "20px" } },
+      createElement("div", { style: styles.cardTitle }, "💰 Cost Structure at Scale (% of Revenue)"),
+      createElement("div", { style: { display: "flex", gap: "4px", height: "40px", marginBottom: "16px" } },
+        [
+          { name: "COGS", value: MARKET_SIZE_DATA.unitEconomics.costStructure.cogs, color: COLORS.danger },
+          { name: "S&M", value: MARKET_SIZE_DATA.unitEconomics.costStructure.salesMarketing, color: COLORS.accent },
+          { name: "R&D", value: MARKET_SIZE_DATA.unitEconomics.costStructure.rd, color: COLORS.info },
+          { name: "G&A", value: MARKET_SIZE_DATA.unitEconomics.costStructure.ga, color: COLORS.purple },
+          { name: "Op. Margin", value: MARKET_SIZE_DATA.unitEconomics.costStructure.operatingMargin, color: COLORS.success }
+        ].map(function(item, i) {
+          return createElement("div", { key: i, style: {
+            width: (item.value * 100) + "%",
+            backgroundColor: item.color,
+            borderRadius: i === 0 ? "6px 0 0 6px" : i === 4 ? "0 6px 6px 0" : "0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }},
+            createElement("span", { style: { fontSize: "10px", fontWeight: "600", color: "#fff" } }, (item.value * 100) + "%")
+          );
+        })
+      ),
+      createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "12px" } },
+        [
+          { name: "COGS", value: MARKET_SIZE_DATA.unitEconomics.costStructure.cogs, color: COLORS.danger, desc: "Hosting, support, implementation" },
+          { name: "Sales & Marketing", value: MARKET_SIZE_DATA.unitEconomics.costStructure.salesMarketing, color: COLORS.accent, desc: "Sales team, marketing, events" },
+          { name: "R&D", value: MARKET_SIZE_DATA.unitEconomics.costStructure.rd, color: COLORS.info, desc: "Engineering, product" },
+          { name: "G&A", value: MARKET_SIZE_DATA.unitEconomics.costStructure.ga, color: COLORS.purple, desc: "Admin, legal, finance" },
+          { name: "Operating Margin", value: MARKET_SIZE_DATA.unitEconomics.costStructure.operatingMargin, color: COLORS.success, desc: "Profit at scale" }
+        ].map(function(item, i) {
+          return createElement("div", { key: i, style: { textAlign: "center" } },
+            createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginBottom: "4px" } },
+              createElement("span", { style: { width: "10px", height: "10px", borderRadius: "2px", backgroundColor: item.color } }),
+              createElement("span", { style: { fontSize: "12px", fontWeight: "600", color: COLORS.text } }, item.name)
+            ),
+            createElement("div", { style: { fontSize: "18px", fontWeight: "700", color: item.color } }, (item.value * 100) + "%"),
+            createElement("div", { style: { fontSize: "10px", color: COLORS.textDim } }, item.desc)
+          );
+        })
+      )
+    ),
+
+    // Benchmarks Comparison
+    createElement(Card, { style: { marginBottom: "24px", background: COLORS.info + "10", borderColor: COLORS.info + "40" } },
+      createElement("div", { style: styles.cardTitle }, "📈 vs. SaaS Benchmarks"),
+      createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px" } },
+        [
+          { metric: "LTV:CAC Ratio", greenbay: ((MARKET_SIZE_DATA.unitEconomics.acv * MARKET_SIZE_DATA.unitEconomics.grossMargin * MARKET_SIZE_DATA.unitEconomics.customerLifetime) / MARKET_SIZE_DATA.unitEconomics.cac).toFixed(1) + "x", benchmark: "3-5x", status: "excellent" },
+          { metric: "CAC Payback", greenbay: Math.round(MARKET_SIZE_DATA.unitEconomics.cac / (MARKET_SIZE_DATA.unitEconomics.acv * MARKET_SIZE_DATA.unitEconomics.grossMargin / 12)) + " mo", benchmark: "12-18 mo", status: "excellent" },
+          { metric: "Gross Margin", greenbay: (MARKET_SIZE_DATA.unitEconomics.grossMargin * 100) + "%", benchmark: "70-80%", status: "good" },
+          { metric: "Net Revenue Retention", greenbay: (MARKET_SIZE_DATA.unitEconomics.nrr * 100) + "%", benchmark: "100-120%", status: "good" }
+        ].map(function(item, i) {
+          var statusColors = { excellent: COLORS.success, good: COLORS.primary, average: COLORS.accent };
+          return createElement("div", { key: i, style: { padding: "16px", backgroundColor: COLORS.card, borderRadius: "8px", textAlign: "center" } },
+            createElement("div", { style: { fontSize: "11px", color: COLORS.textMuted, marginBottom: "8px" } }, item.metric),
+            createElement("div", { style: { fontSize: "24px", fontWeight: "700", color: statusColors[item.status] } }, item.greenbay),
+            createElement("div", { style: { fontSize: "11px", color: COLORS.textDim, marginTop: "4px" } }, "Benchmark: " + item.benchmark),
+            createElement("div", { style: {
+              marginTop: "8px", padding: "4px 8px", borderRadius: "4px", fontSize: "10px", fontWeight: "600",
+              backgroundColor: statusColors[item.status] + "20", color: statusColors[item.status], display: "inline-block"
+            }}, item.status.toUpperCase())
+          );
+        })
+      ),
+      createElement("div", { style: { marginTop: "16px", fontSize: "11px", color: COLORS.textDim } },
+        "Sources: OpenView Partners SaaS Benchmarks 2024, Bessemer Cloud Index"
       )
     ),
 
